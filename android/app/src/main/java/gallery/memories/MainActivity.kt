@@ -24,10 +24,12 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -73,11 +75,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         // Set fullscreen mode if in landscape
         val orientation = resources.configuration.orientation
-        setFullscreen(orientation == Configuration.ORIENTATION_LANDSCAPE)
+        setFullscreen(true)
 
         // Restore last known look
         restoreTheme()
@@ -113,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         super.onConfigurationChanged(config)
 
         // Hide the status bar in landscape
-        setFullscreen(config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        setFullscreen(true)
     }
 
     public override fun onResume() {
@@ -403,7 +407,7 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 window.insetsController?.apply {
-                    hide(WindowInsets.Type.statusBars())
+                    hide(WindowInsets.Type.systemBars())
                     systemBarsBehavior =
                         WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                 }
@@ -424,7 +428,7 @@ class MainActivity : AppCompatActivity() {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 window.insetsController?.apply {
-                    show(WindowInsets.Type.statusBars())
+                    show(WindowInsets.Type.systemBars())
                 }
             } else {
                 @Suppress("Deprecation")
