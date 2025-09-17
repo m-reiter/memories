@@ -10,8 +10,17 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- <item name="android:statusBarColor">?attr/colorPrimaryVariant</item> -->
         <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- Material 3 themes might also set status bar colors by default.
+             Since we are hiding the status bar and making windowbg black,
+             explicit statusBarColor might not be strictly needed here, but doesn't hurt to keep transparent.
+        -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item> <!-- If status bar were visible and dark -->
+        <!-- Ensure no explicit opaque statusBarColor is set here if we want the content below to decide -->
     </style>
 
     <style name="Theme.Memories.NoActionBar">

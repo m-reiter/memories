@@ -29,7 +29,15 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+// import androidx.compose.foundation.layout.displayCutout
+// import androidx.compose.ui.test.bottom
+// import androidx.compose.ui.test.left
+// import androidx.compose.ui.test.right
+// import androidx.compose.ui.test.top
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.setPadding
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -75,13 +83,46 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // 1. Make the base window background black. This will be visible in the cutout area.
+        window.setBackgroundDrawableResource(android.R.color.black)
+
+        // 2. Enable edge-to-edge drawing capabilities.
+        // enableEdgeToEdge() // This calls WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContentView(binding.root)
+
+        // 3. Ensure WebView container and WebView itself don't draw their own opaque backgrounds
+        //    over the window's black background, unless intended.
+        // binding.coordinator.setBackgroundColor(Color.TRANSPARENT) // Let window background show through
+        // binding.webview.setBackgroundColor(Color.TRANSPARENT)     // Let coordinator/window background show
+        binding.coordinator.setBackgroundColor(Color.WHITE) // Let window background show through
+        binding.webview.setBackgroundColor(Color.WHITE)     // Let coordinator/window background show
+
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         // Set fullscreen mode if in landscape
         val orientation = resources.configuration.orientation
+
+        // 4. Your modified setFullscreen call to hide system bars
         setFullscreen(true)
+
+        /*// 5. Apply INSETS AS PADDING to the WebView to protect its content from the notch
+        ViewCompat.setOnApplyWindowInsetsListener(binding.webview) { webView, windowInsets ->
+            // We only care about the display cutout for padding the web content
+            val cutoutInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout())
+
+            webView.setPadding(
+                cutoutInsets.left,
+                cutoutInsets.top,
+                cutoutInsets.right,
+                cutoutInsets.bottom
+            )
+
+            // Return the original insets, minus what we've consumed conceptually by padding.
+            // Or simply WindowInsetsCompat.CONSUMED if nothing else downstream needs these specific cutout values.
+            WindowInsetsCompat.CONSUMED
+        }*/
 
         // Restore last known look
         restoreTheme()
@@ -402,7 +443,7 @@ class MainActivity : AppCompatActivity() {
         if (value) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 window.attributes.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
